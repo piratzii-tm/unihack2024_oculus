@@ -1,0 +1,10 @@
+.app {
+  padding: 2rem;
+
+  &__stories {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2rem;
+    place-items: center;
+  }
+}
