@@ -5,29 +5,6 @@ import { Fragment, useEffect, useState } from "react";
 import { database } from "../backend/config.ts";
 import { onValue, ref } from "firebase/database";
 
-// const stories = [
-//   {
-//     title: 'The Three Pigs',
-//     img: '/the-three-pigs.png',
-//   },
-//   {
-//     title: 'Female Itachi',
-//     img: '/itachi-wannabe.jpg',
-//   },
-//   {
-//     title: 'Lost in Zion',
-//     img: '/zion.jpg',
-//   },
-//   {
-//     title: 'Red Ridding Reinterpreted',
-//     img: '/red-ridding.jpg',
-//   },
-//   {
-//     title: 'The Way of Kings: Chapter 1',
-//     img: '/way-of-kings.jpg',
-//   },
-// ];
-
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
@@ -50,7 +27,9 @@ function Index() {
           const userStories = storiesSnap.val();
 
           const aux = Object.keys(userStories).map((el) => {
-            if ((data.stories.includes(el), el, data.stories)) {
+            console.log(data.stories, el);
+            if (data.stories.includes(el)) {
+              console.log("hello");
               return userStories[el];
             }
           });
@@ -65,17 +44,26 @@ function Index() {
     });
   }, []);
 
+  console.log(stories);
+
   return (
     <div className="app">
       <div className="app__stories">
-        {isLoading ? (
+        {isLoading || stories.length === 0 ? (
           <p>Loading...</p>
         ) : (
-          stories.map((s, index) => (
-            <Fragment key={index}>
-              <KStoryTile img={s.frames[0].link} title={s.id} id={s.id} />
-            </Fragment>
-          ))
+          stories?.map(
+            (s, index) =>
+              s !== undefined && (
+                <Fragment key={index}>
+                  <KStoryTile
+                    img={s.frames?.[0].link}
+                    title={s.title}
+                    id={s.id}
+                  />
+                </Fragment>
+              ),
+          )
         )}
       </div>
     </div>
