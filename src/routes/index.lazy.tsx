@@ -5,29 +5,6 @@ import { Fragment, useEffect, useState } from "react";
 import { database } from "../backend/config.ts";
 import { onValue, ref } from "firebase/database";
 
-// const stories = [
-//   {
-//     title: 'The Three Pigs',
-//     img: '/the-three-pigs.png',
-//   },
-//   {
-//     title: 'Female Itachi',
-//     img: '/itachi-wannabe.jpg',
-//   },
-//   {
-//     title: 'Lost in Zion',
-//     img: '/zion.jpg',
-//   },
-//   {
-//     title: 'Red Ridding Reinterpreted',
-//     img: '/red-ridding.jpg',
-//   },
-//   {
-//     title: 'The Way of Kings: Chapter 1',
-//     img: '/way-of-kings.jpg',
-//   },
-// ];
-
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
