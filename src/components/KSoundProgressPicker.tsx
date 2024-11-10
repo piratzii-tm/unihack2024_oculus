@@ -1,58 +1,37 @@
-import { useRef, useState, useEffect } from 'react';
-import ReactHowler from 'react-howler';
-import KPlayButton from './KPlayButton';
+import {forwardRef, useImperativeHandle, useState} from 'react';
 import KProgressSlider from './KProgressSlider';
 import './KSoundProgressPicker.scss';
 
-function KSoundProgressPicker() {
-    const soundRef = useRef<ReactHowler | null>(null);
+const KSoundProgressPicker = forwardRef((_, ref)=> {
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
 
-    useEffect(() => {
-        soundRef.current = new ReactHowler({
-            src: ['path/to/your/sound.mp3'],
-            onLoad: () => setDuration(soundRef.current!.duration()),
-            onEnd: () => setIsPlaying(false),
-        });
-    }, []);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isPlaying) {
-            interval = setInterval(() => {
-                setProgress(soundRef.current!.seek() as number);
-            }, 100);
+    useImperativeHandle(ref, () => ({
+        setProgress, setDuration: (param: number) => {
+            console.log('setdurcalled')
+            setDuration(param)
         }
-        return () => clearInterval(interval);
-    }, [isPlaying]);
+    }));
 
-    const handleProgressChange = (newProgress: number) => {
-        setProgress(newProgress);
-        soundRef.current!.seek(newProgress);
+    const formatTime = (seconds: number): string => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
     return (
         <div className="sound-progress-picker">
-            <ReactHowler
-                src="path/to/your/sound.mp3"
-                playing={isPlaying}
-                ref={soundRef}
-                onLoad={() => setDuration(soundRef.current!.duration())}
-                onEnd={() => setIsPlaying(false)}
-            />
-            <KPlayButton isPlaying={isPlaying} onClick={() => setIsPlaying(!isPlaying)} />
             <KProgressSlider
                 progress={progress}
                 duration={duration}
-                onChange={handleProgressChange}
+                onChange={() => {}}
             />
             <span className="time">
-                {progress.toFixed(2)} / {duration.toFixed(2)} seconds
+                {formatTime(progress)} / {formatTime(duration)}
             </span>
         </div>
     );
-}
+})
 
 export default KSoundProgressPicker;

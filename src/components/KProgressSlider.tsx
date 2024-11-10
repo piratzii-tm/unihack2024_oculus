@@ -1,7 +1,9 @@
 import React from 'react';
 import './KProgressSlider.scss';
 
-function KProgressSlider({ progress, duration, onChange}) {
+function KProgressSlider({ progress, duration, onChange }) {
+    const progressPercentage = (progress / duration) * 100 + '%';
+
     return (
         <input
             type="range"
@@ -11,6 +13,7 @@ function KProgressSlider({ progress, duration, onChange}) {
             value={progress}
             onChange={(e) => onChange(parseFloat(e.target.value))}
             className="progress-slider"
+            style={{ '--progress': progressPercentage }}
         />
     );
 }
