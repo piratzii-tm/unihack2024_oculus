@@ -5,7 +5,7 @@
 We bring the fun in audiobooks by adding Augmented Reality to the experience.
 
 <div style="flex-direction:row;">
-  <img src="public/imagesRead/first.PNG" height="460" width="600">
+  <img src="public/imagesRead/first.png" height="460" width="600">
 </div>
 
 How? The user can add the audiobook file in our mobile app and they can interact with the environment generated based on the audiobook selected.
