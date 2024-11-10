@@ -1,0 +1,15 @@
+.sound-progress-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(107, 127, 136, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  .time {
+    font-size: 14px;
+    margin-top: 5px;
+    font-family: DMSans;
+    color: aliceblue;
+  }
+  width: 250px;
+}

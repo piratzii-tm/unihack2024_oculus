@@ -1,13 +1,14 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import {createLazyFileRoute, useNavigate} from "@tanstack/react-router";
 import "./styles.scss";
-import { Suspense, useEffect, useState } from "react";
-import { Canvas, useLoader } from "@react-three/fiber";
-import { createXRStore, XR } from "@react-three/xr";
-import { BackSide, TextureLoader } from "three";
-import { onValue, ref } from "firebase/database";
-import { database } from "../../backend/config.ts";
-import { updateProgress } from "../../backend/updateProgress.ts";
-import { userId } from "../index.lazy.tsx";
+import {Suspense, useEffect, useRef, useState} from "react";
+import {Canvas, useLoader} from "@react-three/fiber";
+import {Html} from "@react-three/drei";
+import {createXRStore, XR} from "@react-three/xr";
+import {BackSide, TextureLoader} from "three";
+import {onValue, ref} from "firebase/database";
+import {database} from "../../backend/config.ts";
+import {updateProgress} from "../../backend/updateProgress.ts";
+import KSoundProgressPicker from "../../components/KSoundProgressPicker.tsx";
 
 const store = createXRStore();
 
@@ -65,25 +66,38 @@ function KXRStory({
   );
 }
 
-function WithinXR({ story, uid }) {
+function WithinXR({ story, uid } : { story: Story }) {
   const navigate = useNavigate();
 
   const frames = story.frames;
 
+  const progressRef = useRef();
+
   const onLoad = (onEnterAR: (aud: HTMLAudioElement) => void) => {
     store.enterAR().then((s) => {
-      const aud = new Audio(story.audio);
+      const aud = new Audio(story?.audio || '');
       aud.play();
       onEnterAR(aud);
-      s?.addEventListener("end", () => {
-        aud.src = "";
-        navigate({ to: "/" });
+      aud.addEventListener('timeupdate', () => {
+        if (progressRef.current) {
+          progressRef.current.setProgress(aud.currentTime);
+          progressRef.current.setDuration(aud.duration);
+        }
+      })
+      s?.addEventListener('end', () => {
+        aud.src = '';
+        navigate({ to: '/' });
       });
     });
   };
 
   return (
-    <KXRStory frames={frames} onLoad={onLoad} uid={uid} storyId={story.id} />
+      <>
+        <KXRStory frames={frames} onLoad={onLoad} uid={uid} storyId={story.id} />
+          <Html position={[0, -1, -3]}>
+              <KSoundProgressPicker ref={progressRef}/>
+          </Html>
+      </>
   );
 }
 
@@ -104,7 +118,7 @@ function RouteComponent() {
       <Canvas>
         <Suspense fallback={null}>
           <XR store={store}>
-            <WithinXR story={story} uid={userId} />
+            <WithinXR story={story} />
           </XR>
         </Suspense>
       </Canvas>
