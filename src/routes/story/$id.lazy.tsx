@@ -2,11 +2,13 @@ import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import "./styles.scss";
 import { Suspense, useEffect, useState } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { createXRStore, XR } from "@react-three/xr";
 import { BackSide, TextureLoader } from "three";
 import { MOCK_STORY } from "../../mock.data.tsx";
 import { onValue, ref } from "firebase/database";
 import { database } from "../../backend/config.ts";
+import KSoundProgressPicker from "../../components/KSoundProgressPicker.tsx";
 
 const store = createXRStore();
 
@@ -62,26 +64,30 @@ function KXRStory({
   );
 }
 
-function WithinXR({ story }) {
+function WithinXR({ story }: { story: Story }) {
   const navigate = useNavigate();
-
-  const frames = story.frames;
-
-  console.log(story);
+  const frames = story?.frames || [];
 
   const onLoad = (onEnterAR: (aud: HTMLAudioElement) => void) => {
     store.enterAR().then((s) => {
-      const aud = new Audio(story.audio);
+      const aud = new Audio(story?.audio || '');
       aud.play();
       onEnterAR(aud);
-      s?.addEventListener("end", () => {
-        aud.src = "";
-        navigate({ to: "/" });
+      s?.addEventListener('end', () => {
+        aud.src = '';
+        navigate({ to: '/' });
       });
     });
   };
 
-  return <KXRStory frames={frames} onLoad={onLoad} />;
+  return (
+      <>
+        <KXRStory frames={frames} onLoad={onLoad} />
+        <Html position={[0, -1, -3]}>
+          <KSoundProgressPicker />
+        </Html>
+      </>
+  );
 }
 
 function RouteComponent() {

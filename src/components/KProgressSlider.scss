@@ -1,0 +1,16 @@
+.progress-slider {
+  width: 100%;
+  margin: 10px 0;
+  appearance: none;
+  height: 5px;
+  background: #ddd;
+  outline: none;
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #333;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+}
