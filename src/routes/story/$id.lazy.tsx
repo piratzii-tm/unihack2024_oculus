@@ -4,9 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { createXRStore, XR } from "@react-three/xr";
 import { BackSide, TextureLoader } from "three";
-import { MOCK_STORY } from "../../mock.data.tsx";
 import { onValue, ref } from "firebase/database";
 import { database } from "../../backend/config.ts";
+import { updateProgress } from "../../backend/updateProgress.ts";
+import { userId } from "../index.lazy.tsx";
 
 const store = createXRStore();
 
@@ -17,6 +18,8 @@ export const Route = createLazyFileRoute("/story/$id")({
 function KXRStory({
   frames,
   onLoad,
+  uid,
+  storyId,
 }: {
   onLoad: (onEnterAR: (aud: HTMLAudioElement) => void) => void;
 }) {
@@ -25,7 +28,6 @@ function KXRStory({
     frames.map(({ link }) => link),
   );
 
-  console.log(frames);
   const [currentTexture, setCurrentTexture] = useState(0);
 
   const [aud, setAud] = useState<HTMLAudioElement>();
@@ -44,6 +46,7 @@ function KXRStory({
         aud?.currentTime > parseInt(frames[currentTexture + 1]?.startingTime)
       ) {
         setCurrentTexture((i) => i + 1);
+        updateProgress({ uid, storyId });
       }
     };
     aud?.addEventListener("timeupdate", onUpdateTime);
@@ -62,12 +65,10 @@ function KXRStory({
   );
 }
 
-function WithinXR({ story }) {
+function WithinXR({ story, uid }) {
   const navigate = useNavigate();
 
   const frames = story.frames;
-
-  console.log(story);
 
   const onLoad = (onEnterAR: (aud: HTMLAudioElement) => void) => {
     store.enterAR().then((s) => {
@@ -81,7 +82,9 @@ function WithinXR({ story }) {
     });
   };
 
-  return <KXRStory frames={frames} onLoad={onLoad} />;
+  return (
+    <KXRStory frames={frames} onLoad={onLoad} uid={uid} storyId={story.id} />
+  );
 }
 
 function RouteComponent() {
@@ -101,7 +104,7 @@ function RouteComponent() {
       <Canvas>
         <Suspense fallback={null}>
           <XR store={store}>
-            <WithinXR story={story} />
+            <WithinXR story={story} uid={userId} />
           </XR>
         </Suspense>
       </Canvas>
