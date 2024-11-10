@@ -5,9 +5,10 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { createXRStore, XR } from "@react-three/xr";
 import { BackSide, TextureLoader } from "three";
-import { MOCK_STORY } from "../../mock.data.tsx";
 import { onValue, ref } from "firebase/database";
 import { database } from "../../backend/config.ts";
+import { updateProgress } from "../../backend/updateProgress.ts";
+import { userId } from "../index.lazy.tsx";
 import KSoundProgressPicker from "../../components/KSoundProgressPicker.tsx";
 
 const store = createXRStore();
@@ -19,6 +20,8 @@ export const Route = createLazyFileRoute("/story/$id")({
 function KXRStory({
   frames,
   onLoad,
+  uid,
+  storyId,
 }: {
   onLoad: (onEnterAR: (aud: HTMLAudioElement) => void) => void;
 }) {
@@ -27,7 +30,6 @@ function KXRStory({
     frames.map(({ link }) => link),
   );
 
-  console.log(frames);
   const [currentTexture, setCurrentTexture] = useState(0);
 
   const [aud, setAud] = useState<HTMLAudioElement>();
@@ -46,6 +48,7 @@ function KXRStory({
         aud?.currentTime > parseInt(frames[currentTexture + 1]?.startingTime)
       ) {
         setCurrentTexture((i) => i + 1);
+        updateProgress({ uid, storyId });
       }
     };
     aud?.addEventListener("timeupdate", onUpdateTime);
@@ -64,9 +67,10 @@ function KXRStory({
   );
 }
 
-function WithinXR({ story }: { story: Story }) {
+function WithinXR({ story, uid } : { story: Story }) {
   const navigate = useNavigate();
-  const frames = story?.frames || [];
+
+    const frames = story.frames;
 
   const onLoad = (onEnterAR: (aud: HTMLAudioElement) => void) => {
     store.enterAR().then((s) => {
@@ -82,10 +86,10 @@ function WithinXR({ story }: { story: Story }) {
 
   return (
       <>
-        <KXRStory frames={frames} onLoad={onLoad} />
-        <Html position={[0, -1, -3]}>
-          <KSoundProgressPicker />
-        </Html>
+        <KXRStory frames={frames} onLoad={onLoad} uid={uid} storyId={story.id} />
+          <Html position={[0, -1, -3]}>
+              <KSoundProgressPicker />
+          </Html>
       </>
   );
 }

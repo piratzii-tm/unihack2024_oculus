@@ -5,6 +5,8 @@ import { Fragment, useEffect, useState } from "react";
 import { database } from "../backend/config.ts";
 import { onValue, ref } from "firebase/database";
 
+export const userId = "MEE3Z4vgVYOtLgAFMUsverEukTU2";
+
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
@@ -12,8 +14,6 @@ export const Route = createLazyFileRoute("/")({
 function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState([]);
-
-  const userId = "vxogTMCuCqWeVwE1wZ63j85MRIj2";
 
   useEffect(() => {
     const usersRef = ref(database, "user");
