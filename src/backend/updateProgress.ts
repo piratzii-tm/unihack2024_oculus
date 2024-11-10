@@ -1,7 +1,7 @@
 import { get, ref, set } from "firebase/database";
 import { database } from "./config.ts";
 
-export const updateProgress = async ({ uid, storyId }) => {
+export const updateProgress = async ({ uid, storyId, currentTexture }) => {
   console.log("UPDATE PROGRESS", uid, storyId);
   const snapshot = await get(ref(database, `user/${uid}`));
   if (snapshot.exists()) {
@@ -14,10 +14,10 @@ export const updateProgress = async ({ uid, storyId }) => {
       console.log(el);
       if (Object.keys(el)[0] === storyId) {
         console.log({
-          [storyId]: Object.values(el)[0] + 1,
+          [storyId]: currentTexture + 1,
         });
         return {
-          [storyId]: Object.values(el)[0] + 1,
+          [storyId]: currentTexture + 1,
         };
       } else {
         return el;
